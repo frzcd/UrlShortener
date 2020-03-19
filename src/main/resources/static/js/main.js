@@ -1,16 +1,42 @@
 
 var urlApi = Vue.resource('/url{/link}');
 
-Vue.component('long-to-short', {
+// var router = new VueRouter({
+//     routes: [
+//         { path: '/a', redirect: '/b' }
+//     ]
+// });
+
+
+Vue.component('reply-string', {
+    props: ['info'],
     data: function() {
         return {
-            text: ''
+            response: ''
         }
     },
+    template: '<div>{{ response }}</div>',
+    watch: {
+        info: function (newVal, oldVal) {
+            this.response = newVal
+        }
+    }
+});
+
+Vue.component('long-to-short', {
+    data:
+        function() {
+            return {
+                text: '',
+                response: '',
+            }
+        },
     template:
         '<div>' +
-            '<input type="text" placeholder="Your url" v-model="text" />' +
-            '<input type="button" value="Generate" @click="generate" />' +
+        '<div>Generate short link:</div>' +
+        '<input type="text" placeholder="Your url" v-model="text" />' +
+        '<input type="button" value="Generate" @click="generate" />' +
+        '<reply-string :info="response" />' +
         '</div>',
     methods: {
         generate: function () {
@@ -18,7 +44,10 @@ Vue.component('long-to-short', {
 
             console.log(longUrl);
             urlApi.update({}, longUrl).then(result =>
-                console.log(result)
+                result.json().then(data => {
+                    console.log(data.message);
+                    this.response = data.message
+                })
             );
             this.text = ''
         }
@@ -26,22 +55,29 @@ Vue.component('long-to-short', {
 });
 
 Vue.component('short-to-long', {
-    data: function() {
-        return {
-            text: ''
-        }
-    },
+    data:
+        function() {
+            return {
+                text: '',
+                response: '',
+            }
+        },
     template:
         '<div>' +
+            '<div>Get full url by short link:</div>' +
             '<input type="text" placeholder="Your url" v-model="text" />' +
             '<input type="button" value="Send" @click="getLong" />' +
+            '<reply-string :info="response" />' +
         '</div>',
     methods: {
         getLong: function () {
             var shortUrl = {text: this.text};
             console.log(shortUrl);
             urlApi.save({}, shortUrl).then(result =>
-                console.log(result)
+                result.json().then(data => {
+                    console.log(data.message);
+                    this.response = data.message;
+                })
             );
             this.text = ''
         }
@@ -53,27 +89,13 @@ Vue.component('message-row', {
     template: '<div>{{ row.text }}</div>'
 });
 
-var app = new Vue({
-    el: '#app',
-    template: '<div>{{ message.text }}</div>',
-    data: {
-        message: ''
-    },
-    created: function () {
-        urlApi.get().then(result =>
-            this.message = result.body
-        )
-    }
-});
+
 
 var shortener = new Vue({
     el: '#shortener',
     template:
         '<div>' +
-            '<div>Generate short link:</div>' +
             '<long-to-short />' +
-            '<div></div>' +
-            '<div>Get full url by short link:</div>' +
             '<short-to-long />' +
         '</div>'
 });

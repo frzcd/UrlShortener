@@ -22,8 +22,8 @@ public class DaoTest {
     @DisplayName("Get by long test")
     @Test
     void shortsShouldBeEqual() {
-        String shortByLong = dao.getShortByLong("http://htmlbook.ru/html/img");
-        Assertions.assertEquals("123bcd", shortByLong);
+        String shortByLong = dao.getShortByLong("https://www.google.com/");
+        Assertions.assertEquals("111111", shortByLong);
     }
 
     @DisplayName("Get by long test 2")
