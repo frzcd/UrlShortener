@@ -8,7 +8,7 @@ insert into shortener (id, `data`) values (1, '123456789bcdfghjkmnpqrstvwxyzBCDF
 
 create table if not exists urls (
     id integer not null auto_increment,
-    long_url varchar(255) not null,
+    long_url varchar(1000) not null,
     short_url varchar(6) not null,
 
     primary key (id)
