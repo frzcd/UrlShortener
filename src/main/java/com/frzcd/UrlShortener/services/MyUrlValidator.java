@@ -4,6 +4,4 @@ import org.apache.commons.validator.routines.UrlValidator;
 import org.springframework.stereotype.Service;
 
 @Service
-public class MyUrlValidator extends UrlValidator {
-
-}
+public class MyUrlValidator extends UrlValidator { }

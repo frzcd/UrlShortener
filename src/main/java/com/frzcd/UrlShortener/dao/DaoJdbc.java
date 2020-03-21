@@ -4,6 +4,8 @@ import com.frzcd.UrlShortener.services.ShortUrl;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.stereotype.Repository;
 
+import java.time.Clock;
+import java.time.ZonedDateTime;
 import java.util.HashMap;
 
 @Repository
@@ -43,7 +45,9 @@ public class DaoJdbc implements Dao {
             final HashMap<String, Object> params = new HashMap<>(1);
             params.put("long_url", long_url);
             params.put("short_url", newShort);
-            jdbc.update("insert into urls (`long_url`, `short_url`) values (:long_url, :short_url)", params);
+            params.put("creation_time", ZonedDateTime.now(Clock.systemUTC()));
+            jdbc.update("insert into urls (`long_url`, `short_url`, `creation_time`) " +
+                    "values (:long_url, :short_url, :creation_time)", params);
             return newShort;
         }
     }
