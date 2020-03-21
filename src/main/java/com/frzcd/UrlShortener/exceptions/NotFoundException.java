@@ -7,6 +7,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 public class NotFoundException extends RuntimeException {
 
     public NotFoundException() {
-        super("Not ffound");
+        super("Not found");
     }
 }
