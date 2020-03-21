@@ -5,12 +5,13 @@ import org.apache.commons.validator.routines.UrlValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.view.RedirectView;
 
 import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping("url")
+@RequestMapping("u")
 public class MainController {
 
     Dao dao;
@@ -19,20 +20,16 @@ public class MainController {
     @Value("${home.link}")
     String host;
 
-    @GetMapping
-    public Map<String, String> main() {
-        return new HashMap<String, String>() {{ put("message", "main page"); }};
-    }
-
-    @GetMapping("{link}")
-    public Map<String, String> redirect(@PathVariable String link) {
+    @GetMapping(path = "/{link}")
+    public RedirectView redirect(@PathVariable String link) {
         if (link.length() != 6) {
-            return new HashMap<String, String>() {{ put("message", "wrong short url received"); }};
+            return new RedirectView("/");
         }
         if (dao.checkIsShortExists(link) != 0) {
-            return new HashMap<String, String>() {{ put("message", dao.getLongByShort(link)); }};
+            return new RedirectView(dao.getLongByShort(link));
         }
-        return new HashMap<String, String>() {{ put("message", "such url is not exists"); }};
+
+        return new RedirectView("/");
     }
 
     @PutMapping
@@ -42,17 +39,15 @@ public class MainController {
             return new HashMap<String, String>() {{ put("message", "Invalid url received"); }};
         }
         if (dao.checkIsLongExists(request.get("text")) != 0) {
-            return new HashMap<String, String>() {{ put("message", host + dao.getShortByLong(request.get("text"))); }};
+            return new HashMap<String, String>() {{ put("message", host + "u/" + dao.getShortByLong(request.get("text"))); }};
         }
-        return new HashMap<String, String>() {{ put("message", host + dao.addNewShort(request.get("text"))); }};
+        return new HashMap<String, String>() {{ put("message", host + "u/" + dao.addNewShort(request.get("text"))); }};
     }
 
     @PostMapping
     public Map<String, String> getLongUrlByShort(@RequestBody Map<String, String> request) {
-        System.out.println(request.get("text"));
-        System.out.println(host);
         String url = request.get("text")
-                .replaceFirst(host, "");
+                .replaceFirst(host + "u/", "");
         System.out.println(url);
         if (dao.checkIsShortExists(url) != 0) {
             return new HashMap<String, String>() {{ put("message", dao.getLongByShort(url)); }};

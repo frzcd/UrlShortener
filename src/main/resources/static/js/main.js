@@ -1,12 +1,5 @@
 
-var urlApi = Vue.resource('/url{/link}');
-
-// var router = new VueRouter({
-//     routes: [
-//         { path: '/a', redirect: '/b' }
-//     ]
-// });
-
+var urlApi = Vue.resource('/u{/link}');
 
 Vue.component('reply-string', {
     props: ['info'],
@@ -33,19 +26,16 @@ Vue.component('long-to-short', {
         },
     template:
         '<div class="layer">' +
-            '<p>Generate short link:</p>' +
-            '<div><input type="text" placeholder="Paste your url here" v-model="text" /></div>' +
-            '<div><input type="button" value="Generate" @click="generate" /></div>' +
-            '<reply-string :info="response" />' +
+        '<p>Generate short link:</p>' +
+        '<div><input type="text" placeholder="Your url" v-model="text" /></div>' +
+        '<div><input type="button" value="Generate" @click="generate" /></div>' +
+        '<reply-string :info="response" />' +
         '</div>',
     methods: {
         generate: function () {
             var longUrl = {text: this.text};
-
-            console.log(longUrl);
             urlApi.update({}, longUrl).then(result =>
                 result.json().then(data => {
-                    console.log(data.message);
                     this.response = data.message
                 })
             );
@@ -63,19 +53,17 @@ Vue.component('short-to-long', {
             }
         },
     template:
-    '<div class="layer">' +
+        '<div class="layer">' +
         '<p>Get full url by short link:</p>' +
-        '<div><input type="text" placeholder="Paste your short url here" v-model="text" /></div>' +
+        '<div><input type="text" placeholder="Your url" v-model="text" /></div>' +
         '<div><input type="button" value="Send" @click="getLong" /></div>' +
         '<reply-string :info="response" />' +
-    '</div>',
+        '</div>',
     methods: {
         getLong: function () {
             var shortUrl = {text: this.text};
-            console.log(shortUrl);
             urlApi.save({}, shortUrl).then(result =>
                 result.json().then(data => {
-                    console.log(data.message);
                     this.response = data.message;
                 })
             );
@@ -84,16 +72,11 @@ Vue.component('short-to-long', {
     }
 });
 
-Vue.component('message-row', {
-    props: ['row'],
-    template: '<div>{{ row.text }}</div>'
-});
-
-var shortener = new Vue({
-    el: '#shortener',
+var app = new Vue({
+    el: '#app',
     template:
         '<div>' +
-            '<long-to-short />' +
-            '<short-to-long />' +
+        '<long-to-short />' +
+        '<short-to-long />' +
         '</div>'
 });
